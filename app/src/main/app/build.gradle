@@ -2,19 +2,15 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.ezp.injector'
-    compileSdk 34
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.ezp.injector"
-        minSdk 21
-        targetSdk 34
+        minSdkVersion 21
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
         release { minifyEnabled false }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
     }
 }
