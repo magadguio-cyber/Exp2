@@ -1,9 +1,8 @@
-name: Build EZP APK
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+- name: Build APK
+        run: |
+          gradle tasks --all
+          gradle :app:assembleDebug --stacktrace
+  
 
 jobs:
   build:
