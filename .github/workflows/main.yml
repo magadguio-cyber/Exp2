@@ -1,10 +1,8 @@
 name: Build EZP APK
-
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,15 +10,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Install Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.0'
-      - name: Build APK
-        run: gradle :app:assembleDebug --stacktrace
-      - name: Upload APK
-        use
+          distribution: temurin
+          java-version: "17"
+      - name: S
