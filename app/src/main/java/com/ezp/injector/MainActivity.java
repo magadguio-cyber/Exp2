@@ -1,4 +1,4 @@
-package com.ezp.injector;
+package com.erp.injector;
 
 import android.app.Activity;
 import android.content.Intent;
