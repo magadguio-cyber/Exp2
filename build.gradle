@@ -1,20 +1,16 @@
-apply plugin: 'com.android.application'
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0'
+    }
+}
 
-android {
-    namespace 'com.ezp.injector'
-    compileSdk 34
-    defaultConfig {
-        applicationId "com.ezp.injector"
-        minSdk 21
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release { minifyEnabled false }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
     }
 }
