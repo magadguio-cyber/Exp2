@@ -2,21 +2,21 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ "main", "master" ] # Запуск при пуше в main или master
+    branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-  workflow_dispatch: # Позволяет запускать сборку вручную одной кнопкой
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Скачиваем код из репозитория
+      # 1. Завантажуємо код із репозиторію
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Устанавливаем Java (необходима для работы Gradle)
+      # 2. Налаштовуємо Java
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -24,38 +24,32 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      # 3. Даем права на выполнение скрипту gradlew
+      # 3. Надаємо права файлу gradlew всередині папки Exp2
       - name: Grant Execute Permission for Gradlew
         run: chmod +x ./gradlew
-        # Если ваш Android-проект лежит в подпапке (например, Exp2), 
-        # раскомментируйте строку ниже (удалите знак # перед working-directory):
-        # working-directory: ./Exp2
+        working-directory: ./Exp2
 
-      # 4. Запускаем сборку APK
+      # 4. Запускаємо збірку APK всередині папки Exp2
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
-        # Если ваш Android-проект лежит в подпапке, 
-        # раскомментируйте строку ниже:
-        # working-directory: ./Exp2
+        working-directory: ./Exp2
 
-      # 5. Переименовываем стандартный app-debug.apk в Exp2.apk
+      # 5. Знаходимо створений APK та перейменовуємо його
       - name: Rename APK to Exp2.apk
         run: |
-          # Ищем, где Gradle создал стандартный APK (в корне или подпапке)
           APK_PATH=$(find . -name "app-debug.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
-            echo "Ошибка: APK файл не найден!"
+            echo "Помилка: APK файл не знайдено!"
             exit 1
           fi
-          # Переносим и переименовываем его в корень рабочей директории
           mv "$APK_PATH" ./Exp2.apk
-          echo "Файл успешно переименован в Exp2.apk"
+          echo "Файл перейменовано в Exp2.apk"
 
-      # 6. Загружаем готовый APK на GitHub (его можно будет скачать)
+      # 6. Завантажуємо готовий Exp2.apk на GitHub
       - name: Upload Exp2 APK
         uses: actions/upload-artifact@v4
         with:
           name: Exp2-Artifact
           path: ./Exp2.apk
-          retention-days: 7 # Файл будет храниться 7 дней
+          retention-days: 7
           
