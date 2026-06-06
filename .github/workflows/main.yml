@@ -22,39 +22,28 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      # 3. Автоматично переходимо в папку з Android-проєктом і запускаємо Gradle
-      - name: Smart Auto-Build APK
+      # 3. Автоматично створюємо файл gradlew, якого не вистачає
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper
+
+      # 4. Запускаємо збірку додатку через створений файл
+      - name: Build Debug APK
         run: |
-          # Шукаємо, у якій саме папці лежить файл gradlew
-          GRADLE_DIR=$(find . -name "gradlew" -exec dirname {} \;)
-          
-          if [ -z "$GRADLE_DIR" ]; then
-            echo "КРИТИЧНА ПОМИЛКА: Файлу gradlew взагалі немає в репозиторії!"
-            exit 1
-          fi
-          
-          echo "Знайдено Android-проєкт у папці: $GRADLE_DIR"
-          cd "$GRADLE_DIR"
-          
-          # Надаємо права та запускаємо збірку додатка
           chmod +x ./gradlew
           ./gradlew assembleDebug --stacktrace
 
-      # 4. Знаходимо готовий файл і перейменовуємо на Exp2.apk
+      # 5. Знаходимо файл та перейменовуємо на Exp2.apk
       - name: Find and Rename APK to Exp2.apk
         run: |
           APK_PATH=$(find . -name "app-debug.apk" -o -name "*-debug.apk" | head -n 1)
-          
           if [ -z "$APK_PATH" ]; then
-            echo "ПОМИЛКА: APK файл не знайдено в каталогах збірки!"
+            echo "Помилка: APK файл не знайдено!"
             exit 1
           fi
-          
-          echo "Знайдено готовий файл за шляхом: $APK_PATH"
           mv "$APK_PATH" ./Exp2.apk
           echo "Файл успішно перейменовано на Exp2.apk"
 
-      # 5. Викладаємо готовий APK для скачування
+      # 6. Викладаємо готовий APK для скачування
       - name: Upload Exp2 APK
         uses: actions/upload-artifact@v4
         with:
