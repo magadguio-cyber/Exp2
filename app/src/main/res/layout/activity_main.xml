@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0d0d0d"
+    android:padding="16dp">
+
+    <TextView
+        android:text="EZP Injector"
+        android:textColor="#ffffff"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:text="Black Russia Mod Loader"
+        android:textColor="#555555"
+        android:textSize="13sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"/>
+
+    <ListView
+        android:id="@+id/listBuilds"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="#1e1e1e"
+        android:dividerHeight="1dp"/>
+
+    <Button
+        android:id="@+id/btnAdd"
+        android:text="+ Додати збірку (.so)"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:background="#6c47ff"
+        android:textColor="#ffffff"
+        android:textSize="14sp"/>
+
+</LinearLayout>
