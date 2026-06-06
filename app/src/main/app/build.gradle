@@ -1,6 +1,5 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
+
 android {
     namespace 'com.ezp.injector'
     compileSdk 34
