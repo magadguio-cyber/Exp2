@@ -22,28 +22,25 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      # 3. Автоматично створюємо файл gradlew, якого не вистачає
-      - name: Generate Gradle Wrapper
-        run: gradle wrapper
+      # 3. Автоматична збірка через офіційний Gradle Action
+      # Цей крок сам знайде твій додаток і запустить правильну таску збірки
+      - name: Setup and Execute Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          arguments: assembleDebug --stacktrace
 
-      # 4. Запускаємо збірку додатку через створений файл
-      - name: Build Debug APK
-        run: |
-          chmod +x ./gradlew
-          ./gradlew assembleDebug --stacktrace
-
-      # 5. Знаходимо файл та перейменовуємо на Exp2.apk
+      # 4. Знаходимо файл та перейменовуємо на Exp2.apk
       - name: Find and Rename APK to Exp2.apk
         run: |
           APK_PATH=$(find . -name "app-debug.apk" -o -name "*-debug.apk" | head -n 1)
           if [ -z "$APK_PATH" ]; then
-            echo "Помилка: APK файл не знайдено!"
+            echo "Помилка: APK файл не знайдено в каталогах збірки!"
             exit 1
           fi
           mv "$APK_PATH" ./Exp2.apk
           echo "Файл успішно перейменовано на Exp2.apk"
 
-      # 6. Викладаємо готовий APK для скачування
+      # 5. Викладаємо готовий APK для скачування
       - name: Upload Exp2 APK
         uses: actions/upload-artifact@v4
         with:
