@@ -20,17 +20,14 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
 
-      # 3. Налаштовуємо Gradle (тепер без помилкових аргументів)
+      # 3. Встановлюємо та налаштовуємо Gradle в систему сервера
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # 4. Запускаємо збірку стандартним і надійним способом
+      # 4. Збираємо APK за допомогою глобального системного Gradle (без ./gradlew)
       - name: Execute Gradle Build
-        run: |
-          chmod +x ./gradlew
-          ./gradlew assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace
 
       # 5. Знаходимо готовий файл та перейменовуємо на Exp2.apk
       - name: Find and Rename APK to Exp2.apk
