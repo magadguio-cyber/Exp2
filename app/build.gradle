@@ -20,13 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    
-    // Автоматичне перейменування збірки в Exp2.apk
-    applicationVariants.all { variant ->
-        variant.outputs.all {
-            outputFileName = "Exp2.apk"
-        }
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
