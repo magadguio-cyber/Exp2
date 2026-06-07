@@ -21,8 +21,10 @@ public class MainActivity extends Activity {
         buildsDir = getFilesDir() + "/builds/";
         new File(buildsDir).mkdirs();
         listView = findViewById(R.id.listBuilds);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, builds);
-        listView.setAdapter(adapter);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, builds);
+    
+        
+         listView.setAdapter(adapter);
         loadBuilds();
         findViewById(R.id.btnAdd).setOnClickListener(v -> pickFile());
         listView.setOnItemClickListener((p, v, pos, id) -> injectBuild(builds.get(pos)));
