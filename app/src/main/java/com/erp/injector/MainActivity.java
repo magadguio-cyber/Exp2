@@ -4,41 +4,70 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.*;
-import java.io.*;
-import java.util.*;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
-    ListView listView;
-    List<String> builds = new ArrayList<>();
-    ArrayAdapter<String> adapter;
-    String buildsDir;
+    private ListView listView;
+    private List<String> builds = new ArrayList<>();
+    private ArrayAdapter<String> adapter;
+    private String buildsDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        buildsDir = getFilesDir() + "/builds/";
-        new File(buildsDir).mkdirs();
-        listView = findViewById(R.id.listBuilds);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, builds);
-    
         
-         listView.setAdapter(adapter);
+        // Перевіряємо, чи існує розмітка, або використовуємо просту системну
+        try {
+            setContentView(R.layout.activity_main);
+            listView = findViewById(R.id.listBuilds);
+        } catch (Exception e) {
+            listView = new ListView(this);
+            setContentView(listView);
+        }
+
+        buildsDir = getFilesDir() + "/builds/";
+        File dir = new File(buildsDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, builds);
+        listView.setAdapter(adapter);
         loadBuilds();
-        findViewById(R.id.btnAdd).setOnClickListener(v -> pickFile());
+
+        // Безпечне підключення кнопки додавання файлу
+        try {
+            findViewById(R.id.btnAdd).setOnClickListener(v -> pickFile());
+        } catch (Exception ignored) {}
+
         listView.setOnItemClickListener((p, v, pos, id) -> injectBuild(builds.get(pos)));
-        listView.setOnItemLongClickListener((p, v, pos, id) -> { deleteBuild(builds.get(pos)); return true; });
+        listView.setOnItemLongClickListener((p, v, pos, id) -> {
+            deleteBuild(builds.get(pos));
+            return true;
+        });
     }
 
-    void loadBuilds() {
+    private void loadBuilds() {
         builds.clear();
         File[] files = new File(buildsDir).listFiles();
-        if (files != null) for (File f : files) if (f.getName().endsWith(".so")) builds.add(f.getName());
+        if (files != null) {
+            for (File f : files) {
+                if (f.getName().endsWith(".so")) {
+                    builds.add(f.getName());
+                }
+            }
+        }
         adapter.notifyDataSetChanged();
     }
 
-    void pickFile() {
+    private void pickFile() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
         i.setType("*/*");
         startActivityForResult(i, 1);
@@ -46,34 +75,52 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int req, int res, Intent data) {
-        if (req == 1 && res == RESULT_OK && data != null) copyFile(data.getData());
+        if (req == 1 && res == RESULT_OK && data != null) {
+            copyFile(data.getData());
+        }
     }
 
-    void copyFile(Uri uri) {
+    private void copyFile(Uri uri) {
         try {
             InputStream in = getContentResolver().openInputStream(uri);
+            if (in == null) return;
+            
             FileOutputStream out = new FileOutputStream(buildsDir + "build_" + System.currentTimeMillis() + ".so");
-            byte[] buf = new byte[4096]; int len;
-            while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
-            in.close(); out.close();
+            byte[] buf = new byte[4096];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
             Toast.makeText(this, "Збірку додано!", Toast.LENGTH_SHORT).show();
             loadBuilds();
-        } catch (Exception e) { Toast.makeText(this, "Помилка: " + e.getMessage(), Toast.LENGTH_SHORT).show(); }
+        } catch (Exception e) {
+            Toast.makeText(this, "Помилка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
-    void injectBuild(String name) {
+    private void injectBuild(String name) {
         try {
             System.load(buildsDir + name);
             Toast.makeText(this, "Запущено: " + name, Toast.LENGTH_SHORT).show();
+            
             Intent launch = getPackageManager().getLaunchIntentForPackage("com.rockstar.gtasa");
-            if (launch != null) startActivity(launch);
-            else Toast.makeText(this, "GTA SA не встановлена!", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) { Toast.makeText(this, "Помилка: " + e.getMessage(), Toast.LENGTH_SHORT).show(); }
+            if (launch != null) {
+                startActivity(launch);
+            } else {
+                Toast.makeText(this, "GTA SA не встановлена!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Помилка інжекту: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
-    void deleteBuild(String name) {
-        new File(buildsDir + name).delete();
-        Toast.makeText(this, "Видалено!", Toast.LENGTH_SHORT).show();
-        loadBuilds();
+    private void deleteBuild(String name) {
+        File file = new File(buildsDir + name);
+        if (file.exists() && file.delete()) {
+            Toast.makeText(this, "Видалено!", Toast.LENGTH_SHORT).show();
+            loadBuilds();
+        }
     }
 }
