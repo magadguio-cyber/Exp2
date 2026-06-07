@@ -22,14 +22,17 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      # 3. Автоматична збірка через офіційний Gradle Action
-      # Цей крок сам знайде твій додаток і запустить правильну таску збірки
-      - name: Setup and Execute Gradle
+      # 3. Налаштовуємо Gradle (тепер без помилкових аргументів)
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          arguments: assembleDebug --stacktrace
 
-      # 4. Знаходимо файл та перейменовуємо на Exp2.apk
+      # 4. Запускаємо збірку стандартним і надійним способом
+      - name: Execute Gradle Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      # 5. Знаходимо готовий файл та перейменовуємо на Exp2.apk
       - name: Find and Rename APK to Exp2.apk
         run: |
           APK_PATH=$(find . -name "app-debug.apk" -o -name "*-debug.apk" | head -n 1)
@@ -40,7 +43,7 @@ jobs:
           mv "$APK_PATH" ./Exp2.apk
           echo "Файл успішно перейменовано на Exp2.apk"
 
-      # 5. Викладаємо готовий APK для скачування
+      # 6. Викладаємо готовий APK для скачування
       - name: Upload Exp2 APK
         uses: actions/upload-artifact@v4
         with:
